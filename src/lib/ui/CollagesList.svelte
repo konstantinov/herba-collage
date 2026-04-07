@@ -4,10 +4,10 @@
 	let { collages } = $props();
 	const dispatch = createEventDispatcher();
 
-	const handleDelete = (e) => {
+	const handleDelete = (e, id) => {
 		e.stopPropagation();
 
-		dispatch('delete', { id: collage.id });
+		dispatch('delete', { id });
 	};
 </script>
 
@@ -25,7 +25,9 @@
 					{new Date(collage.updated).toLocaleDateString('ru-RU')}
 					{new Date(collage.updated).toLocaleTimeString('ru-RU', { timeZone: '+06:00' })}
 				</div>
-				<button class="btn btn-error btn-xs" on:click={handleDelete}>Удалить</button>
+				<button class="btn btn-error btn-xs" on:click={(e) => handleDelete(e, collage.id)}
+					>Удалить</button
+				>
 			</div>
 		</li>
 	{/each}

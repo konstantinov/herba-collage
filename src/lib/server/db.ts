@@ -9,17 +9,21 @@ const db = (fn: (db: DB.Database) => unknown) => {
 	return r;
 };
 
-export const getCollage = (collageId: string, sessionId: string) => db((db) => {
-	const collage = db
-		.prepare('select * from collages where sessionId = ? and id = ? limit 1')
-		.get(sessionId, collageId);
+export const getCollage = (collageId: string, sessionId: string) =>
+	db((db) => {
+		const collage = db
+			.prepare('select * from collages where sessionId = ? and id = ? limit 1')
+			.get(sessionId, collageId);
 
-	if (collage) {
-		collage.data = JSON.parse(collage.data);
-	}
+		if (collage) {
+			collage.data = JSON.parse(collage.data);
+		}
 
-	return collage;
-})
+		return collage;
+	});
+
+export const deleteCollage = (id: number) =>
+	db((db) => db.prepare('delete from collages where id=?').run(id));
 
 export const getCollages = (sessionId: string) =>
 	db((db) =>
@@ -57,8 +61,9 @@ export const createCollage = (data: CreateCollageParams) =>
 			.run(data.sessionId, data.name, JSON.stringify(data.people), data.preview)
 	);
 
-export const updateCollage = (id: number, data) => db(
-	db => db
-		.prepare('update collages set name = ?,filename = ?, data = ? where id = ?')
-		.run(data.name, data.preview, JSON.stringify(data.people), id)
-)
+export const updateCollage = (id: number, data) =>
+	db((db) =>
+		db
+			.prepare('update collages set name = ?,filename = ?, data = ? where id = ?')
+			.run(data.name, data.preview, JSON.stringify(data.people), id)
+	);

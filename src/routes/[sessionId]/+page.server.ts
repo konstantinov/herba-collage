@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { getCollages } from '$lib/server/db';
 
-export const load: PageServerLoad = ({ params }) => {
+export const load: PageServerLoad = ({ params, depends }) => {
+	depends('collages:list');
 
 	return {
 		collages: getCollages(params.sessionId)
