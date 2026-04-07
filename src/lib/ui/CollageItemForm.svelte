@@ -17,7 +17,7 @@
 <div class="flex flex-col gap-1">
 	<figure class="h-50 bg-stone-200 rounded-md flex justify-center" on:click={() => file.click()}>
 		{#if url || dataUrl}
-			<img src={dataUrl || url} alt="" class="h-50 w-full object-contain" />
+			<img src={dataUrl || `/img/${url}`} alt="" class="h-50 w-full object-contain" />
 		{:else}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +47,16 @@
 			</svg>
 		{/if}
 	</figure>
-	<input type="file" name="photo" class="hidden" bind:this={file} on:change={handleChange} />
+	<input
+		type="file"
+		name={dataUrl ? 'photo' : ''}
+		class="hidden"
+		bind:this={file}
+		on:change={handleChange}
+	/>
+	{#if !dataUrl}
+		<input type="hidden" name="photo" value={url} />
+	{/if}
 	<div class="card-actions flex-nowrap">
 		<label class="input shrink">
 			Имя

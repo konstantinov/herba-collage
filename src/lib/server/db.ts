@@ -2,12 +2,24 @@ import DB from 'better-sqlite3';
 
 const db = (fn: (db: DB.Database) => unknown) => {
 	const dbClient = new DB('db.sqlite');
-	// dbClient.exec('create table sessions (id text primery key, expires datetie, count int, comment text);')
+
 	const r = fn(dbClient);
 	dbClient.close();
 
 	return r;
 };
+
+export const getCollage = (collageId: string, sessionId: string) => db((db) => {
+	const collage = db
+		.prepare('select * from collages where sessionId = ? and id = ? limit 1')
+		.get(sessionId, collageId);
+
+	if (collage) {
+		collage.data = JSON.parse(collage.data);
+	}
+
+	return collage;
+})
 
 export const getCollages = (sessionId: string) =>
 	db((db) =>
@@ -44,3 +56,9 @@ export const createCollage = (data: CreateCollageParams) =>
 			.prepare('insert into collages (sessionId, name, data, filename) values (?, ?, ?, ?)')
 			.run(data.sessionId, data.name, JSON.stringify(data.people), data.preview)
 	);
+
+export const updateCollage = (id: number, data) => db(
+	db => db
+		.prepare('update collages set name = ?,filename = ?, data = ? where id = ?')
+		.run(data.name, data.preview, JSON.stringify(data.people), id)
+)
