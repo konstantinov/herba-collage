@@ -28,7 +28,7 @@
 			<CollageItemForm on:delete={() => people.splice(i, 1)} />
 		{/each}
 	</form>
-	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd}>Добвыить участника</button
+	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd}>Добавить участника</button
 	>
 	<button class="btn btn-block btn-success" on:click={() => form.submit()}>Создать коллаж</button>
 </div>

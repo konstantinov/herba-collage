@@ -1,4 +1,4 @@
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { getCollage, updateCollage } from '$lib/server/db';
 import { v4 as uuid } from 'uuid';
@@ -75,10 +75,4 @@ export const actions: Actions = {
 
 		return redirect(301, `/${params.sessionId}`);
 	}
-};
-
-export const load: PageServerLoad = ({ params }) => {
-	return {
-		collage: getCollage(params.collageId, params.sessionId) || redirect(301, '/' + params.sessionId)
-	};
 };
