@@ -69,7 +69,7 @@ export const actions: Actions = {
 			console.warn(e);
 		}
 
-		await generatePreview({ photos, preview });
+		await generatePreview({ people, preview });
 
 		updateCollage(collage.id, { name, people, preview });
 

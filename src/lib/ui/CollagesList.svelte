@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { format } from '$lib/date';
 
 	let { collages } = $props();
 	const dispatch = createEventDispatcher();
-
-	const handleDelete = (e, id) => {
-		e.stopPropagation();
-		e.preventDefault();
-
-		dispatch('delete', { id });
-	};
 </script>
 
 <ul class="list bg-base-100 rounded-box shadow-md">
@@ -23,8 +17,7 @@
 			<div class="list-col-grow flex flex-col">
 				<div>{collage.name || '(без названия)'}</div>
 				<div class="text-xs uppercase font-thin opacity-60 flex-grow">
-					{new Date(collage.updated).toLocaleDateString('ru-RU')}
-					{new Date(collage.updated).toLocaleTimeString('ru-RU', { timeZone: '+06:00' })}
+					{format(new Date(collage.updated), { noSec: true, noYear: true })}
 				</div>
 				<div class="dropdown" on:click={(e) => e.stopPropagation()}>
 					<div tabindex="0" role="button" class="btn btn-block btn-soft btn-success btn-xs">

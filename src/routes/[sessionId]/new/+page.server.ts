@@ -42,7 +42,7 @@ export const actions: Actions = {
 
 		const preview = uuid() + '.jpg';
 
-		await generatePreview({ photos, preview });
+		await generatePreview({ people, preview });
 
 		createCollage({ name, sessionId: params.sessionId, people, preview });
 

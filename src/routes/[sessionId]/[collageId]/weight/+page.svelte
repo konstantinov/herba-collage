@@ -3,6 +3,7 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
+	import { format } from '$lib/date';
 
 	const { sessionId } = $page.params;
 
@@ -67,7 +68,7 @@
 			<tbody>
 				{#each data.weights as weight (weight.date)}
 					<tr>
-						<td>{weight.date}</td>
+						<td>{format(new Date(weight.date), { noTime: true, noYear: true })}</td>
 						{#each people as p, i (i)}
 							<td>{weight.data[p.name]}</td>
 						{/each}

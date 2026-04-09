@@ -31,19 +31,41 @@ export const prepareFile = ({ srcPath, dstPath }: { srcPath: string; dstPath: st
 	imCLI.exec(`convert ${srcPath} -resize 500x500 ${dstPath}`);
 
 export const generatePreview = async ({
-	photos,
+	people,
 	preview
 }: {
-	photos: string[];
+	people: { name: string; photo: string }[];
 	preview: string;
 }) => {
 	const previewPathTemp = join(basePath, '~' + preview);
 	const previewPath = join(basePath, preview);
 
+	const photos: string[] = await Promise.all(
+		people.map(async ({ name, photo }) => {
+			const photoFilename = join(basePath, photo);
+			const combinedFilename = join(basePath, '~' + photo);
+			const tempFilename = join(basePath, '~~' + photo);
+
+			await imCLI.exec(
+				`convert -background '#67bc2a' -gravity center -fill '#dddddd' -size 500x100 caption:"${name.replace(/"/g, '')}" ${tempFilename}`
+			);
+
+			await imCLI.exec(
+				`montage -tile 1x2 -gravity center -geometry +0+0 -extent 500x ${photoFilename} ${tempFilename} ${combinedFilename}`
+			);
+
+			fs.unlinkSync(tempFilename);
+
+			return combinedFilename;
+		})
+	);
+
 	await imCLI.exec(
-		`montage -tile ${getTile(photos.length).join('x')} -geometry 500x500+0+0 ${photos.map((photo) => join(basePath, photo)).join(' ')} ${previewPathTemp}`
+		`montage -tile ${getTile(photos.length).join('x')} -geometry 500x600+0+0 ${photos.join(' ')} ${previewPathTemp}`
 	);
 	await imCLI.exec(`convert ${previewPathTemp} -resize 200x200 ${previewPath}`);
+
+	photos.forEach(fs.unlinkSync);
 
 	fs.unlinkSync(previewPathTemp);
 };
