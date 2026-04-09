@@ -13,6 +13,7 @@
 	const { data } = $props();
 
 	const handleDelete = async () => {
+		collageDeleteConfirmation.close();
 		await goto(resolve(`/${sessionId}/${currentId}/delete`));
 		await invalidate('collages:list');
 	};
@@ -24,6 +25,7 @@
 	<CollagesList
 		collages={data.collages}
 		on:click={({ detail: { id } }) => goto(resolve(`/${sessionId}/${id}`))}
+		on:weight={({ detail: { id } }) => goto(resolve(`/${sessionId}/${id}/weight`))}
 		on:delete={({ detail: { id } }) => {
 			currentId = id;
 			collageDeleteConfirmation.showModal();

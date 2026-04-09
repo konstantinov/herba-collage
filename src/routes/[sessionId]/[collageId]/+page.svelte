@@ -1,11 +1,13 @@
 <script lang="ts">
 	import CollageItemForm from '$lib/ui/CollageItemForm.svelte';
+	import { enhance } from '$app/forms';
 
 	const { data } = $props();
 
-	let people = $state(data.collage.data);
-	let name = data.collage.name,
-		form;
+	let people = $state(data.collage.data),
+		name = data.collage.name,
+		form,
+		loading = false;
 
 	const handleAdd = () => {
 		people.push({ name: '' });
@@ -19,19 +21,37 @@
 		method="post"
 		class="flex flex-col gap-2"
 		bind:this={form}
+		use:enhance={() => {
+			loading = true;
+			return async ({ update }) => {
+				await update();
+				loading = false;
+			};
+		}}
 	>
 		<h1 class="text-lg">Редактирование коллажа</h1>
 		<label class="input w-full">
 			Название
-			<input name="collageName" type="text" class="input grow" value={name} />
+			<input name="collageName" type="text" class="input grow" value={name} disabled={loading} />
 			<span class="badge badge-neutral badge-xs">необязательно</span>
 		</label>
 		<h1 class="text-lg">Участники</h1>
 		{#each people as p, i (i)}
-			<CollageItemForm name={p.name} url={p.photo} on:delete={() => people.splice(i, 1)} />
+			<CollageItemForm
+				name={p.name}
+				url={p.photo}
+				on:delete={() => people.splice(i, 1)}
+				disabled={loading}
+			/>
 		{/each}
 	</form>
-	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd}>Добавить участника</button
+	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd} disabled={loading}
+		>Добавить участника</button
 	>
-	<button class="btn btn-block btn-success" on:click={() => form.submit()}>Сохранить коллаж</button>
+	<button class="btn btn-block btn-success" on:click={() => form.submit()} disabled={loading}>
+		{#if loading}
+			<span class="loading loading-spinner"></span>
+		{/if}
+		Сохранить коллаж</button
+	>
 </div>

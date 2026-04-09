@@ -9,6 +9,21 @@ const db = (fn: (db: DB.Database) => unknown) => {
 	return r;
 };
 
+export const getWeights = (collageId: number) =>
+	db((db) =>
+		db
+			.prepare('select date, data from weights where collageId = ? order by date desc')
+			.all(collageId)
+			.map((weight) => ({ date: weight.date, data: JSON.parse(weight.data) }))
+	);
+
+export const addWeights = (collageId: number, weights: Record<string, number>) =>
+	db((db) =>
+		db
+			.prepare('insert or replace into weights (collageId, data) values(?, ?)')
+			.run(collageId, JSON.stringify(weights))
+	);
+
 export const getCollage = (collageId: string, sessionId: string) =>
 	db((db) => {
 		const collage = db

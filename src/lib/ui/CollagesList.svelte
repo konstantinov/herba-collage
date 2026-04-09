@@ -6,6 +6,7 @@
 
 	const handleDelete = (e, id) => {
 		e.stopPropagation();
+		e.preventDefault();
 
 		dispatch('delete', { id });
 	};
@@ -25,9 +26,28 @@
 					{new Date(collage.updated).toLocaleDateString('ru-RU')}
 					{new Date(collage.updated).toLocaleTimeString('ru-RU', { timeZone: '+06:00' })}
 				</div>
-				<button class="btn btn-error btn-xs" on:click={(e) => handleDelete(e, collage.id)}
-					>Удалить</button
-				>
+				<div class="dropdown" on:click={(e) => e.stopPropagation()}>
+					<div tabindex="0" role="button" class="btn btn-block btn-soft btn-success btn-xs">
+						Действия
+					</div>
+					<ul
+						tabindex="-1"
+						class="dropdown-content menu bg-base-100 rounded-box z-1 w-full pl-0 pr-0 shadow-sm gap-1"
+					>
+						<li>
+							<a
+								class="btn btn-warning btn-block"
+								on:click={() => dispatch('weight', { id: collage.id })}>Указать вес</a
+							>
+						</li>
+						<li>
+							<a
+								class="btn btn-error w-full"
+								on:click={() => dispatch('delete', { id: collage.id })}>Удалить</a
+							>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</li>
 	{/each}

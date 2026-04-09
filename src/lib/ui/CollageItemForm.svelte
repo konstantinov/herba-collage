@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	let dataUrl = $state('');
-	let { name, url } = $props();
+	let { name, url, disabled } = $props();
 	const dispatch = createEventDispatcher();
 
 	let file;
@@ -52,6 +52,7 @@
 		name={dataUrl ? 'photo' : ''}
 		class="hidden"
 		bind:this={file}
+		{disabled}
 		on:change={handleChange}
 	/>
 	{#if !dataUrl}
@@ -60,7 +61,7 @@
 	<div class="card-actions flex-nowrap">
 		<label class="input shrink">
 			Имя
-			<input type="text" name="name" value={name} class="input grow" />
+			<input type="text" name="name" value={name} class="input grow" {disabled} />
 		</label>
 		<button class="btn btn-error" on:click={() => dispatch('delete')}>Удалить</button>
 	</div>
