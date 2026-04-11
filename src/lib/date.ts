@@ -1,5 +1,5 @@
 export const format = (date: Date, options = {}) => {
-	let result = `${date.toLocaleDateString('ru-RU')} ${date.toLocaleTimeString('ru-RU', { timeZone: '+06:00' })}`;
+	let result = `${date.toLocaleDateString('ru-RU')} ${date.toLocaleTimeString('ru-RU')}`;
 
 	if (options.noSec) {
 		result = result.replace(/:\d{2}$/, '');

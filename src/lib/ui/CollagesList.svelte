@@ -13,7 +13,7 @@
 			<div class="text-7xl font-thin opacity-30 tabular-nums">
 				{#if i < 9}0{/if}{i + 1}
 			</div>
-			<img class="size-20 rounded-box object-contain bg-white" src="/img/{collage.filename}" />
+			<img class="size-20 rounded-box object-contain bg-white" src="/img/{collage.preview}" />
 			<div class="list-col-grow flex flex-col">
 				<div>{collage.name || '(без названия)'}</div>
 				<div class="text-xs uppercase font-thin opacity-60 flex-grow">

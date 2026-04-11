@@ -99,7 +99,7 @@
 			</label>
 		{/each}
 	</form>
-	<button class="btn btn-block btn-success" onclick={() => form.requestSubmit()}>
+	<button class="btn btn-block btn-success" disabled={loading} onclick={() => form.requestSubmit()}>
 		{#if loading}
 			<span class="loading loading-spinner"></span>
 		{/if}

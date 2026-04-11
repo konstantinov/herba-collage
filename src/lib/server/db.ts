@@ -9,13 +9,18 @@ const db = (fn: (db: DB.Database) => unknown) => {
 	return r;
 };
 
-export const getWeights = (collageId: number) =>
+interface Weight {
+	date: string;
+	data: Record<string, number>;
+}
+
+export const getWeights = (collageId: number): Weight[] =>
 	db((db) =>
 		db
 			.prepare('select date, data from weights where collageId = ? order by date desc')
 			.all(collageId)
 			.map((weight) => ({ date: weight.date, data: JSON.parse(weight.data) }))
-	);
+	) as Weight[];
 
 export const addWeights = (collageId: number, weights: Record<string, number>) =>
 	db((db) =>
@@ -44,7 +49,7 @@ export const getCollages = (sessionId: string) =>
 	db((db) =>
 		db
 			.prepare(
-				'select id, name, filename, updated from collages where sessionId = ? order by updated desc'
+				'select id, name, preview, updated from collages where sessionId = ? order by updated desc'
 			)
 			.all(sessionId)
 	);
@@ -72,13 +77,16 @@ interface CreateCollageParams {
 export const createCollage = (data: CreateCollageParams) =>
 	db((db) =>
 		db
-			.prepare('insert into collages (sessionId, name, data, filename) values (?, ?, ?, ?)')
+			.prepare('insert into collages (sessionId, name, data, preview) values (?, ?, ?, ?)')
 			.run(data.sessionId, data.name, JSON.stringify(data.people), data.preview)
 	);
+
+export const markCollageAsDirty = (id: number) =>
+	db((db) => db.prepare('update collages set filename = null where id = ?').run(id));
 
 export const updateCollage = (id: number, data) =>
 	db((db) =>
 		db
-			.prepare('update collages set name = ?,filename = ?, data = ? where id = ?')
+			.prepare('update collages set name = ?, preview = ?, data = ? where id = ?')
 			.run(data.name, data.preview, JSON.stringify(data.people), id)
 	);
