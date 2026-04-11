@@ -5,7 +5,7 @@
 	let people = $state([]),
 		name = '',
 		form,
-		loading = false;
+		loading = $state(false);
 
 	const handleAdd = () => {
 		people.push({ name: '' });
@@ -41,7 +41,11 @@
 	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd} disabled={loading}
 		>Добавить участника</button
 	>
-	<button class="btn btn-block btn-success" disabled={loading} on:click={() => form.submit()}>
+	<button
+		class="btn btn-block btn-success"
+		disabled={loading}
+		on:click={() => form.requestSubmit()}
+	>
 		{#if loading}
 			<span class="loading loading-spinner"></span>
 		{/if}

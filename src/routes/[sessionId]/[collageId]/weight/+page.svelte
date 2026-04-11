@@ -16,8 +16,13 @@
 		first = {},
 		last = {},
 		globalDiff = {},
-		loading = false,
-		isCurrentDateAdded = data.weights[0].date === new Date().toISOString().split('T')[0];
+		loading = $state(false),
+		isCurrentDateAdded = $derived(data.weights[0]?.date === new Date().toISOString().split('T')[0]),
+		value = $derived(
+			isCurrentDateAdded
+				? people.reduce((acc, v) => ({ ...acc, [v.name]: data.weights[0]?.data[v.name] }), {})
+				: {}
+		);
 
 	for (let i = 0; i < data.weights.length; i++) {
 		const item = data.weights[i].data;
@@ -69,6 +74,7 @@
 		bind:this={form}
 		use:enhance={() => {
 			loading = true;
+
 			return async ({ update }) => {
 				await update();
 				loading = false;
@@ -88,18 +94,18 @@
 					class="input grow"
 					step="0.05"
 					disabled={loading}
-					value={isCurrentDateAdded ? data.weights[0].data[p.name] : ''}
+					bind:value={value[p.name]}
 				/>
 			</label>
 		{/each}
 	</form>
-	<button class="btn btn-block btn-success" on:click={() => form.submit()}>
+	<button class="btn btn-block btn-success" onclick={() => form.requestSubmit()}>
 		{#if loading}
 			<span class="loading loading-spinner"></span>
 		{/if}
 		Добавить вес</button
 	>
-	<button class="btn btn-block btn-soft btn-success" on:click={() => goto(resolve('/' + sessionId))}
+	<button class="btn btn-block btn-soft btn-success" onclick={() => goto(resolve('/' + sessionId))}
 		>Назад</button
 	>
 	{#if data.weights.length > 0}

@@ -7,7 +7,7 @@
 	let people = $state(data.collage.data),
 		name = data.collage.name,
 		form,
-		loading = false;
+		loading = $state(false);
 
 	const handleAdd = () => {
 		people.push({ name: '' });
@@ -48,7 +48,11 @@
 	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd} disabled={loading}
 		>Добавить участника</button
 	>
-	<button class="btn btn-block btn-success" on:click={() => form.submit()} disabled={loading}>
+	<button
+		class="btn btn-block btn-success"
+		on:click={() => form.requestSubmit()}
+		disabled={loading}
+	>
 		{#if loading}
 			<span class="loading loading-spinner"></span>
 		{/if}

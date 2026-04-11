@@ -30,15 +30,14 @@ export const basePath = join(process.cwd(), 'static', 'img');
 export const prepareFile = ({ srcPath, dstPath }: { srcPath: string; dstPath: string }) =>
 	imCLI.exec(`convert ${srcPath} -resize 500x500 ${dstPath}`);
 
-export const generatePreview = async ({
-	people,
-	preview
-}: {
+interface CollageParams {
 	people: { name: string; photo: string }[];
-	preview: string;
-}) => {
-	const previewPathTemp = join(basePath, '~' + preview);
-	const previewPath = join(basePath, preview);
+	filename: string;
+	callback: (filename: string) => Promise<void>;
+}
+
+export const generateCollage = async ({ people, filename, callback }: CollageParams) => {
+	const previewPath = join(basePath, filename);
 
 	const photos: string[] = await Promise.all(
 		people.map(async ({ name, photo }) => {
@@ -61,11 +60,37 @@ export const generatePreview = async ({
 	);
 
 	await imCLI.exec(
-		`montage -tile ${getTile(photos.length).join('x')} -geometry 500x600+0+0 ${photos.join(' ')} ${previewPathTemp}`
+		`montage -tile ${getTile(photos.length).join('x')} -geometry 500x600+0+0 ${photos.join(' ')} ${previewPath}`
 	);
-	await imCLI.exec(`convert ${previewPathTemp} -resize 200x200 ${previewPath}`);
+
+	await callback(previewPath);
 
 	photos.forEach(fs.unlinkSync);
 
-	fs.unlinkSync(previewPathTemp);
+	fs.unlinkSync(previewPath);
 };
+
+export const generatePreview = ({ people, filename }: Omit<CollageParams, 'callback'>) =>
+	generateCollage({
+		people,
+		filename: '~' + filename,
+		callback: async (collage: string) => {
+			const previewPath = join(basePath, filename);
+
+			await imCLI.exec(`convert ${collage} -resize 200x200 ${previewPath}`);
+		}
+	});
+
+export const generateWeights = async ({
+	people,
+	filename
+}: Omit<CollageParams, 'callback'> & { diff: Record<string, number> }) =>
+	generateCollage({
+		people,
+		filename: '~' + filename,
+		callback: async (collage: string) => {
+			const previewPath = join(basePath, filename);
+
+			await imCLI.exec(`convert ${collage} -resize 200x200 ${previewPath}`);
+		}
+	});
