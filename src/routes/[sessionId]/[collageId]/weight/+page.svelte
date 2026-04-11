@@ -16,7 +16,8 @@
 		first = {},
 		last = {},
 		globalDiff = {},
-		loading = false;
+		loading = false,
+		isCurrentDateAdded = data.weights[0].date === new Date().toISOString().split('T')[0];
 
 	for (let i = 0; i < data.weights.length; i++) {
 		const item = data.weights[i].data;
@@ -87,6 +88,7 @@
 					class="input grow"
 					step="0.05"
 					disabled={loading}
+					value={isCurrentDateAdded ? data.weights[0].data[p.name] : ''}
 				/>
 			</label>
 		{/each}
@@ -113,7 +115,13 @@
 								{#if globalDiff[p.name] > 0}
 									<div class="badge badge-xs badge-error">+{globalDiff[p.name]}</div>
 								{:else if globalDiff[p.name] < 0}
-									<div class="badge badge-xs badge-success">{globalDiff[p.name]}</div>
+									<label class="swap">
+										<input type="checkbox" />
+										<div class="badge badge-xs badge-success swap-off">{globalDiff[p.name]}</div>
+										<div class="badge badge-xs badge-success swap-on">
+											{Math.round((last[p.name] / first[p.name]) * 1000) / 1000}
+										</div>
+									</label>
 								{/if}
 							</th>
 						{/each}
@@ -124,12 +132,20 @@
 						<tr>
 							<td>{format(new Date(weight.date), { noTime: true, noYear: true })}</td>
 							{#each people as p, i (i)}
-								<td>
+								<td class="whitespace-nowrap">
 									{weight.data[p.name]}
 									{#if diff[weight.date]?.[p.name] > 0}
 										<div class="badge badge-xs badge-error">+{diff[weight.date][p.name]}</div>
 									{:else if diff[weight.date]?.[p.name] < 0}
-										<div class="badge badge-xs badge-success">{diff[weight.date][p.name]}</div>
+										<label class="swap">
+											<input type="checkbox" />
+											<div class="badge badge-xs badge-success swap-off">
+												{diff[weight.date][p.name]}
+											</div>
+											<div class="badge badge-xs badge-success swap-on">
+												{Math.round((last[p.name] / weight.data[p.name]) * 1000) / 1000}
+											</div>
+										</label>
 									{/if}
 								</td>
 							{/each}

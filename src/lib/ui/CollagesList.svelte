@@ -29,6 +29,12 @@
 					>
 						<li>
 							<a
+								class="btn btn-info btn-block"
+								on:click={() => dispatch('download', { id: collage.id })}>Скачать коллаж</a
+							>
+						</li>
+						<li>
+							<a
 								class="btn btn-warning btn-block"
 								on:click={() => dispatch('weight', { id: collage.id })}>Указать вес</a
 							>

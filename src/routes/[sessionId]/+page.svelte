@@ -25,6 +25,7 @@
 	<CollagesList
 		collages={data.collages}
 		on:click={({ detail: { id } }) => goto(resolve(`/${sessionId}/${id}`))}
+		on:download={({ detail: { id } }) => goto(resolve(`/${sessionId}/${id}/download`))}
 		on:weight={({ detail: { id } }) => goto(resolve(`/${sessionId}/${id}/weight`))}
 		on:delete={({ detail: { id } }) => {
 			currentId = id;
