@@ -47,6 +47,8 @@ export const actions: Actions = {
 			})
 		);
 
+		const fat = data.getAll('fat');
+
 		try {
 			if (photos.length < collage.data.length) {
 				for (let i = photos.length; i < collage.data.length; i++) {
@@ -59,7 +61,7 @@ export const actions: Actions = {
 
 		const people = data
 			.getAll('name')
-			.map((name, i) => ({ name: name.toString(), photo: photos[i] }));
+			.map((name, i) => ({ name: name.toString(), photo: photos[i], fat: !!fat[i] }));
 
 		const preview = uuid() + '.jpg';
 

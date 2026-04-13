@@ -4,6 +4,7 @@
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
 	import { format } from '$lib/date';
+	import { preventSubmit } from '$lib/html';
 
 	const { sessionId } = $page.params;
 
@@ -95,6 +96,7 @@
 					step="0.05"
 					disabled={loading}
 					bind:value={value[p.name]}
+					onkeydown={preventSubmit}
 				/>
 			</label>
 		{/each}
@@ -118,16 +120,18 @@
 						{#each people as p, i (i)}
 							<th>
 								{p.name}
-								{#if globalDiff[p.name] > 0}
-									<div class="badge badge-xs badge-error">+{globalDiff[p.name]}</div>
-								{:else if globalDiff[p.name] < 0}
-									<label class="swap">
-										<input type="checkbox" />
-										<div class="badge badge-xs badge-success swap-off">{globalDiff[p.name]}</div>
-										<div class="badge badge-xs badge-success swap-on">
-											{Math.round((last[p.name] / first[p.name]) * 1000) / 1000}
-										</div>
-									</label>
+								{#if globalDiff[p.name]}
+									{#if p.fat !== globalDiff[p.name] > 0}
+										<div class="badge badge-xs badge-error">+{globalDiff[p.name]}</div>
+									{:else if p.fat !== globalDiff[p.name] < 0}
+										<label class="swap">
+											<input type="checkbox" />
+											<div class="badge badge-xs badge-success swap-off">{globalDiff[p.name]}</div>
+											<div class="badge badge-xs badge-success swap-on">
+												{Math.round((last[p.name] / first[p.name]) * 1000) / 1000}
+											</div>
+										</label>
+									{/if}
 								{/if}
 							</th>
 						{/each}
@@ -140,18 +144,20 @@
 							{#each people as p, i (i)}
 								<td class="whitespace-nowrap">
 									{weight.data[p.name]}
-									{#if diff[weight.date]?.[p.name] > 0}
-										<div class="badge badge-xs badge-error">+{diff[weight.date][p.name]}</div>
-									{:else if diff[weight.date]?.[p.name] < 0}
-										<label class="swap">
-											<input type="checkbox" />
-											<div class="badge badge-xs badge-success swap-off">
-												{diff[weight.date][p.name]}
-											</div>
-											<div class="badge badge-xs badge-success swap-on">
-												{Math.round((last[p.name] / weight.data[p.name]) * 1000) / 1000}
-											</div>
-										</label>
+									{#if diff[weight.date]?.[p.name]}
+										{#if p.fat !== diff[weight.date]?.[p.name] > 0}
+											<div class="badge badge-xs badge-error">+{diff[weight.date][p.name]}</div>
+										{:else if p.fat !== diff[weight.date]?.[p.name] < 0}
+											<label class="swap">
+												<input type="checkbox" />
+												<div class="badge badge-xs badge-success swap-off">
+													{diff[weight.date][p.name]}
+												</div>
+												<div class="badge badge-xs badge-success swap-on">
+													{Math.round((last[p.name] / weight.data[p.name]) * 1000) / 1000}
+												</div>
+											</label>
+										{/if}
 									{/if}
 								</td>
 							{/each}

@@ -1,5 +1,4 @@
 import imCLI from 'imagemagick-cli';
-import { tmpdir } from 'node:os';
 import { join } from 'path';
 import fs from 'fs';
 
@@ -18,7 +17,7 @@ export const getTile = (length: number): [number, number] => {
 		const j = Math.ceil(length / i);
 
 		if (Math.abs(i / j - 3 / 4) <= min) {
-			result = [i, j];
+			result = [j, i];
 			min = i / j;
 		}
 	}

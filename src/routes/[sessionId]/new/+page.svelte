@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CollageItemForm from '$lib/ui/CollageItemForm.svelte';
 	import { enhance } from '$app/forms';
+	import { preventSubmit } from '$lib/html';
 
 	let people = $state([]),
 		name = '',
@@ -28,9 +29,16 @@
 		}}
 	>
 		<h1 class="text-lg">Создание коллажа</h1>
-		<label class="input w-full">
+		<label class="input w-full outline-none">
 			Название
-			<input name="collageName" type="text" class="input grow" value={name} disabled={loading} />
+			<input
+				name="collageName"
+				type="text"
+				class="input grow outline-none"
+				value={name}
+				disabled={loading}
+				onkeydown={preventSubmit}
+			/>
 			<span class="badge badge-neutral badge-xs">необязательно</span>
 		</label>
 		<h1 class="text-lg">Участники</h1>
@@ -38,14 +46,10 @@
 			<CollageItemForm on:delete={() => people.splice(i, 1)} disabled={loading} />
 		{/each}
 	</form>
-	<button class="btn btn-soft btn-block btn-success" on:click={handleAdd} disabled={loading}
+	<button class="btn btn-soft btn-block btn-success" onclick={handleAdd} disabled={loading}
 		>Добавить участника</button
 	>
-	<button
-		class="btn btn-block btn-success"
-		disabled={loading}
-		on:click={() => form.requestSubmit()}
-	>
+	<button class="btn btn-block btn-success" disabled={loading} onclick={() => form.requestSubmit()}>
 		{#if loading}
 			<span class="loading loading-spinner"></span>
 		{/if}

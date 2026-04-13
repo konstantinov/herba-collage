@@ -36,9 +36,11 @@ export const actions: Actions = {
 			})
 		);
 
+		const fat = data.getAll('fat');
+
 		const people = data
 			.getAll('name')
-			.map((name, i) => ({ name: name.toString(), photo: photos[i] }));
+			.map((name, i) => ({ name: name.toString(), photo: photos[i], fat: !!fat[i] }));
 
 		const preview = uuid() + '.jpg';
 
@@ -47,7 +49,5 @@ export const actions: Actions = {
 		createCollage({ name, sessionId: params.sessionId, people, preview });
 
 		return redirect(301, `/${params.sessionId}`);
-
-		// const file = data.get('file') as File; // 'file' matches the input's name attribute
 	}
 };

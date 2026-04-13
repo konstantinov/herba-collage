@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { preventSubmit } from '$lib/html';
 
 	let dataUrl = $state('');
-	let { name, url, disabled } = $props();
+	let { name, url, disabled, fat } = $props();
+
 	const dispatch = createEventDispatcher();
 
 	let file;
@@ -15,7 +17,7 @@
 </script>
 
 <div class="flex flex-col gap-1">
-	<figure class="h-50 bg-stone-200 rounded-md flex justify-center" on:click={() => file.click()}>
+	<figure class="h-50 bg-stone-200 rounded-md flex justify-center" onclick={() => file.click()}>
 		{#if url || dataUrl}
 			<img src={dataUrl || `/img/${url}`} alt="" class="h-50 w-full object-contain" />
 		{:else}
@@ -53,16 +55,29 @@
 		class="hidden"
 		bind:this={file}
 		{disabled}
-		on:change={handleChange}
+		onchange={handleChange}
 	/>
 	{#if !dataUrl}
 		<input type="hidden" name="photo" value={url} />
 	{/if}
 	<div class="card-actions flex-nowrap">
-		<label class="input shrink">
+		<label class="input shrink outline-none">
 			Имя
-			<input type="text" name="name" value={name} class="input grow" {disabled} />
+			<input
+				type="text"
+				name="name"
+				value={name}
+				class="input grow outline-none"
+				{disabled}
+				onkeydown={preventSubmit}
+			/>
 		</label>
-		<button class="btn btn-error" on:click={() => dispatch('delete')}>Удалить</button>
+		<input type="hidden" name="fat" value={fat || ''} />
+		<label class="swap">
+			<input type="checkbox" bind:checked={fat} />
+			<div class="btn btn-warning swap-off" type="button">Снижение веса</div>
+			<div class="btn btn-success swap-on" type="button">Набор веса</div>
+		</label>
+		<button class="btn btn-error" type="button" onclick={() => dispatch('delete')}>Удалить</button>
 	</div>
 </div>

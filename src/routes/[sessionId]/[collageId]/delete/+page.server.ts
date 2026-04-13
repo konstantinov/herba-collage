@@ -9,9 +9,17 @@ export const load: PageServerLoad = ({ params }) => {
 	const collage = getCollage(params.collageId, params.sessionId);
 
 	if (collage) {
-		[...collage.data.map(({ photo }) => photo), collage.filename].forEach((file) =>
-			fs.unlinkSync(join(basePath, file))
-		);
+		[
+			...collage.data.map(({ photo }) => photo),
+			...(collage.filename ? [collage.filename] : []),
+			collage.preview
+		].forEach((file) => {
+			try {
+				fs.unlinkSync(join(basePath, file));
+			} catch (e) {
+				console.error(e);
+			}
+		});
 
 		deleteCollage(collage.id);
 	}

@@ -6,10 +6,10 @@ import fs from 'fs';
 import { join } from 'path';
 import { basePath, generateWeights } from '$lib/utils';
 
-const getLastDiff = (name: string, weights: Record<string, number>[]) =>
+const getLastDiff = (name: string, fat: boolean, weights: Record<string, number>[]) =>
 	weights[0]?.[name] &&
 	weights[1]?.[name] &&
-	weights[0]?.[name] < weights[1]?.[name] && {
+	fat === weights[0]?.[name] > weights[1]?.[name] && {
 		[name]: weights[0]?.[name] * 1000 - weights[1]?.[name] * 1000
 	};
 
@@ -29,7 +29,10 @@ export const GET: RequestHandler = async ({ params }) => {
 			.slice(0, 2)
 			.map(({ data }) => data);
 
-		const diff = collage.data.reduce((acc, v) => ({ ...acc, ...getLastDiff(v.name, weights) }), {});
+		const diff = collage.data.reduce(
+			(acc, v) => ({ ...acc, ...getLastDiff(v.name, v.fat, weights) }),
+			{}
+		);
 
 		await generateWeights({ people: collage.data, filename, diff });
 	}
