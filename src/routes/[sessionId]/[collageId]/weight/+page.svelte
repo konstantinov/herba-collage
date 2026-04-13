@@ -86,13 +86,13 @@
 	>
 		<h1 class="text-lg">Добавление веса участников</h1>
 		{#each people as p, i (i)}
-			<label class="input w-full">
+			<label class="input w-full outline-none">
 				{p.name}
 				<input
 					name="weight"
 					type="number"
 					min="0"
-					class="input grow"
+					class="input grow outline-none"
 					step="0.05"
 					disabled={loading}
 					bind:value={value[p.name]}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { preventSubmit } from '$lib/html';
+	import Error from '$lib/ui/icons/Error.svelte';
 
 	let dataUrl = $state('');
 	let { name, url, disabled, fat } = $props();
@@ -75,9 +76,10 @@
 		<input type="hidden" name="fat" value={fat || ''} />
 		<label class="swap">
 			<input type="checkbox" bind:checked={fat} />
-			<div class="btn btn-warning swap-off" type="button">Снижение веса</div>
-			<div class="btn btn-success swap-on" type="button">Набор веса</div>
+			<div class="btn btn-warning swap-off whitespace-nowrap" type="button">Снижение веса</div>
+			<div class="btn btn-success swap-on whitespace-nowrap" type="button">Набор веса</div>
 		</label>
-		<button class="btn btn-error" type="button" onclick={() => dispatch('delete')}>Удалить</button>
+		<button class="btn btn-error" type="button" onclick={() => dispatch('delete')}><Error /></button
+		>
 	</div>
 </div>
