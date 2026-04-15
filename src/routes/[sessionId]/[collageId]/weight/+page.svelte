@@ -29,8 +29,10 @@
 		const item = data.weights[i].data;
 		const diffItem = {};
 
-		if (prevItem) {
-			Object.keys(item).forEach((name) => {
+		Object.keys(item).forEach((name) => {
+			if (!first[name] && item[name]) first[name] = item[name];
+
+			if (prevItem) {
 				if (prevItem[name] && item[name]) {
 					diffItem[name] = prevItem[name] * 1000 - item[name] * 1000;
 				} else if (prevItem[name] && !item[name]) {
@@ -40,24 +42,12 @@
 						diffItem[name] = prevItem[name] * 1000 - prevValue * 1000;
 					}
 				}
+			}
 
-				if (item[name]) {
-					last[name] = item[name];
-				}
-			});
+			if (item[name]) last[name] = item[name];
+		});
 
-			diff[data.weights[i - 1].date] = diffItem;
-		} else {
-			Object.keys(item).forEach((name) => {
-				if (!first[name] && item[name]) {
-					first[name] = item[name];
-				}
-
-				if (item[name]) {
-					last[name] = item[name];
-				}
-			});
-		}
+		if (prevItem) diff[data.weights[i - 1].date] = diffItem;
 
 		prevItem = item;
 	}
