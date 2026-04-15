@@ -12,11 +12,46 @@
 
 	let people = data.collage.data,
 		form,
-		prevItem,
-		diff = {},
-		first = {},
-		last = {},
-		globalDiff = {},
+		{ first, last, diff, globalDiff } = $derived.by(() => {
+			let prevItem,
+				diff = {},
+				first = {},
+				last = {},
+				globalDiff = {};
+
+			for (let i = 0; i < data.weights.length; i++) {
+				const item = data.weights[i].data;
+				const diffItem = {};
+
+				Object.keys(item).forEach((name) => {
+					if (!first[name] && item[name]) first[name] = item[name];
+
+					if (prevItem) {
+						if (prevItem[name] && item[name]) {
+							diffItem[name] = prevItem[name] * 1000 - item[name] * 1000;
+						} else if (prevItem[name] && !item[name]) {
+							const prevValue = data.weights.slice(i).find(({ data }) => data[name])?.data?.[name];
+
+							if (prevValue) {
+								diffItem[name] = prevItem[name] * 1000 - prevValue * 1000;
+							}
+						}
+					}
+
+					if (item[name]) last[name] = item[name];
+				});
+
+				if (prevItem) diff[data.weights[i - 1].date] = diffItem;
+
+				prevItem = item;
+			}
+
+			people.forEach(({ name }) => {
+				globalDiff[name] = first[name] * 1000 - last[name] * 1000;
+			});
+
+			return { first, last, diff, globalDiff };
+		}),
 		loading = $state(false),
 		isCurrentDateAdded = $derived(data.weights[0]?.date === new Date().toISOString().split('T')[0]),
 		value = $derived(
@@ -24,37 +59,6 @@
 				? people.reduce((acc, v) => ({ ...acc, [v.name]: data.weights[0]?.data[v.name] }), {})
 				: {}
 		);
-
-	for (let i = 0; i < data.weights.length; i++) {
-		const item = data.weights[i].data;
-		const diffItem = {};
-
-		Object.keys(item).forEach((name) => {
-			if (!first[name] && item[name]) first[name] = item[name];
-
-			if (prevItem) {
-				if (prevItem[name] && item[name]) {
-					diffItem[name] = prevItem[name] * 1000 - item[name] * 1000;
-				} else if (prevItem[name] && !item[name]) {
-					const prevValue = data.weights.slice(i).find(({ data }) => data[name])?.data?.[name];
-
-					if (prevValue) {
-						diffItem[name] = prevItem[name] * 1000 - prevValue * 1000;
-					}
-				}
-			}
-
-			if (item[name]) last[name] = item[name];
-		});
-
-		if (prevItem) diff[data.weights[i - 1].date] = diffItem;
-
-		prevItem = item;
-	}
-
-	people.forEach(({ name }) => {
-		globalDiff[name] = first[name] * 1000 - last[name] * 1000;
-	});
 </script>
 
 <div class="flex flex-col gap-3">
