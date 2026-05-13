@@ -45,31 +45,36 @@ export const generateCollage = async ({
 }: CollageParams) => {
 	const previewPath = join(basePath, filename);
 
-	const photos: string[] = await Promise.all(
-		people.map(async ({ name, photo }, i) => {
-			const photoFilename = join(basePath, photo);
-			const combinedFilename = join(basePath, '~' + photo);
-			const tempFilename = join(basePath, '~~' + photo);
+	const photos: string[] = (
+		await Promise.all(
+			people.map(async ({ name, photo }, i) => {
+				if (photo === '') return '';
 
-			await imCLI.exec(
-				`convert -background '#67bc2a' -gravity center -fill '#dddddd' -size 500x100 caption:"${name.replace(/"/g, '')}" ${tempFilename}`
-			);
+				const photoFilename = join(basePath, photo);
+				const combinedFilename = join(basePath, '~' + photo);
+				const tempFilename = join(basePath, '~~' + photo);
 
-			await imCLI.exec(
-				`montage -tile 1x2 -gravity center -geometry +0+0 -extent 500x ${photoFilename} ${tempFilename} ${combinedFilename}`
-			);
+				await imCLI.exec(
+					`convert -background '#67bc2a' -gravity center -fill '#dddddd' -size 500x100 caption:"${name.replace(/"/g, '')}" ${tempFilename}`
+				);
 
-			await callbackPerItem?.(combinedFilename, name, i);
+				await imCLI.exec(
+					`montage -tile 1x2 -gravity center -geometry +0+0 -extent 500x ${photoFilename} ${tempFilename} ${combinedFilename}`
+				);
 
-			fs.unlinkSync(tempFilename);
+				await callbackPerItem?.(combinedFilename, name, i);
 
-			return combinedFilename;
-		})
-	);
+				fs.unlinkSync(tempFilename);
 
-	await imCLI.exec(
-		`montage -tile ${getTile(photos.length).join('x')} -geometry 500x600+0+0 ${photos.join(' ')} ${previewPath}`
-	);
+				return combinedFilename;
+			})
+		)
+	).filter((value) => value);
+
+	if (photos.length)
+		await imCLI.exec(
+			`montage -tile ${getTile(photos.length).join('x')} -geometry 500x600+0+0 ${photos.join(' ')} ${previewPath}`
+		);
 
 	await callback?.(previewPath);
 
@@ -81,11 +86,13 @@ export const generatePreview = ({ people, filename }: Omit<CollageParams, 'callb
 		people,
 		filename,
 		callback: async (collage: string) => {
-			const previewPath = join(basePath, '~' + filename);
+			if (fs.existsSync(collage)) {
+				const previewPath = join(basePath, '~' + filename);
 
-			await imCLI.exec(`convert ${collage} -resize 200x200 ${previewPath}`);
+				await imCLI.exec(`convert ${collage} -resize 200x200 ${previewPath}`);
 
-			fs.renameSync(previewPath, collage);
+				fs.renameSync(previewPath, collage);
+			}
 		}
 	});
 
@@ -103,8 +110,8 @@ export const generateWeights = async ({
 			if (diff[name]) {
 				await imCLI.exec(
 					`convert ${itemFilename} ` +
-						` \\( -size 508x84 -background none -fill '#fff' -gravity center caption:"${diff[name]}" -geometry -2+160 -blur 8x2 -matte -channel A +level 0,50% +channel  \\) -composite` +
-						` -size 500x80 -background none -fill '#1d1d1d' -gravity center caption:"${diff[name]}" -geometry +0+160 ` +
+						// ` \\( -size 508x84 -background none -fill '#4800ffff' -gravity center caption:"${diff[name]}" -geometry -2+160 -blur 8 -matte -channel A +level 0,50% +channel  \\) -composite` +
+						` -size 500x90 -background none -stroke '#4800ffff' -strokewidth 1 -fill '#c6f200ff' -gravity center caption:"${diff[name]}" -geometry +0+160 ` +
 						` -composite ${tempFilename}`
 				);
 

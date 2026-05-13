@@ -5,6 +5,13 @@
 	import { enhance } from '$app/forms';
 	import { format } from '$lib/date';
 	import { preventSubmit } from '$lib/html';
+	import { onDestroy, onMount } from 'svelte';
+
+	let timeoutId;
+
+	onMount(() => (timeoutId = setTimeout(() => invalidate('collage:weights'), 5000)));
+
+	onDestroy(() => clearTimeout(timeoutId));
 
 	const { sessionId } = $page.params;
 

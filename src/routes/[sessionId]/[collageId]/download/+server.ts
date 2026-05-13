@@ -1,4 +1,4 @@
-import type { Actions, RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 import { getCollage, getWeights } from '$lib/server/db';
 import { redirect } from '@sveltejs/kit';
 import { v4 as uuid } from 'uuid';

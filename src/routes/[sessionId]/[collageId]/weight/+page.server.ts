@@ -9,10 +9,14 @@ export const actions: Actions = {
 		const data = await request.formData();
 
 		const collage = getCollage(params.collageId, params.sessionId);
+		const oldWeights = getWeights(parseInt(params.collageId))[0] ?? {};
 
 		const weights = data
 			.getAll('weight')
-			.reduce((acc, weight, i) => ({ ...acc, [collage.data[i].name]: weight }), {});
+			.reduce(
+				(acc, weight, i) => ({ ...acc, ...(weight && { [collage.data[i].name]: weight }) }),
+				oldWeights
+			);
 
 		addWeights(collage.id, weights);
 

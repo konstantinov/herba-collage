@@ -12,7 +12,7 @@ export const actions: Actions = {
 		const name = data.get('collageName')?.toString() || '';
 
 		const photos = await Promise.all(
-			data.getAll('photo').map(async (file) => {
+			data.getAll('photo').map(async (file: unknown) => {
 				if (file instanceof File) {
 					const { ext } = parse(file.name);
 
@@ -38,9 +38,11 @@ export const actions: Actions = {
 
 		const fat = data.getAll('fat');
 
-		const people = data
-			.getAll('name')
-			.map((name, i) => ({ name: name.toString(), photo: photos[i], fat: !!fat[i] }));
+		const people = data.getAll('name').map((name, i: number) => ({
+			name: name.toString(),
+			photo: photos[i],
+			fat: !!fat[i]
+		}));
 
 		const preview = uuid() + '.jpg';
 
