@@ -7,11 +7,11 @@
 	import { preventSubmit } from '$lib/html';
 	import { onDestroy, onMount } from 'svelte';
 
-	let timeoutId;
+	let intervalId;
 
-	onMount(() => (timeoutId = setTimeout(() => invalidate('collage:weights'), 5000)));
+	onMount(() => (intervalId = setInterval(() => invalidate('collage:weights'), 5000)));
 
-	onDestroy(() => clearTimeout(timeoutId));
+	onDestroy(() => clearInterval(intervalId));
 
 	const { sessionId } = $page.params;
 
